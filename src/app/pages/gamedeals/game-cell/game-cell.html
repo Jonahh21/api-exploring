@@ -1,0 +1,15 @@
+<div class="card bg-base-100 w-min-fit my-4 shadow-sm">
+    <figure>
+        <img [src]="game().thumb" [alt]="game().internalName" class="h-50 w-full object-cover" />
+    </figure>
+    <div class="card-body">
+        <h2 class="card-title">{{game().external}} <span class="text-accent px-2 py-1 rounded bg-primary">{{
+                game().cheapest | currency:'EUR' }}</span></h2>
+        <div class="card-actions justify-end">
+            @if (game().steamAppID != null) {
+            <a [href]="steamLink()" target="_blank" class="btn btn-secondary"><fa-icon [icon]="steamIcon" ></fa-icon></a>
+            }
+            <button class="btn btn-primary">pepito</button>
+        </div>
+    </div>
+</div>
