@@ -1,5 +1,5 @@
 <div class="p-4">
-    <app-search-bar [(searchText)]="textSearch"></app-search-bar>
+    <app-search-bar [(searchText)]="textSearch" [placeholder]="'Busca alguna oferta...'"></app-search-bar>
     <div class="grid grid-cols-4 gap-4">
         @for (game of sortedGames(); track game.gameID) {
         <app-game-cell [game]="game" ></app-game-cell>

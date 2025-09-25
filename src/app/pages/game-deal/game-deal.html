@@ -1,0 +1,55 @@
+<div class="">
+    @if (deal() != null) {
+    <div class="hero min-h-screen"
+        [style]="`background-image: url(${gameInfo()?.image}); background-position: center;`">
+        <div class="hero-overlay"></div>
+        <div class="hero-content text-neutral-content text-center">
+            <div class="">
+                <h1 class="mb-5 text-5xl font-bold">{{ gameInfo()?.title }}</h1>
+                <div class="stats shadow backdrop-blur-sm">
+                    <div class="stat">
+                        <div class="stat-figure text-primary">
+                            <fa-icon [icon]="starIcon" class="text-2xl" />
+                        </div>
+                        <div class="stat-title text-neutral-content">Metacritic Score</div>
+                        <div class="stat-value text-primary">{{ gameInfo()?.metacriticScore | percent}}</div>
+                        <div class="stat-desc text-neutral-content">Last checked: Now</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-figure text-secondary">
+                            <fa-icon [icon]="steamIcon" class="text-2xl" />
+                        </div>
+                        <div class="stat-title text-neutral-content">Steam ratings percent</div>
+                        <div class="stat-value text-secondary">{{ gameInfo()?.steamRatingPercent | percent}}</div>
+                        <div class="stat-desc text-neutral-content">{{ gameInfo()?.steamRatingCount | number }} people voted</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-figure text-accent">
+                            <fa-icon [icon]="moneyIcon" class="text-2xl" />
+                        </div>
+                        <div class="stat-title text-neutral-content">Normal Price</div>
+                        <div class="stat-value text-accent">{{ gameInfo()?.normalPrice | currency }}</div>
+                        <div class="stat-desc text-neutral-content">Cheapest Price: <span class="text-secondary">{{gameInfo()?.cheapest | currency}}</span></div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-figure">
+                            <fa-icon [icon]="dateIcon" class="text-2xl" />
+                        </div>
+                        <div class="stat-title text-neutral-content">Release Date</div>
+                        <div class="stat-value">{{ gameInfo()?.releaseDate | date}}</div>
+                        <div class="stat-desc text-neutral-content">Checked</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <canvas id="ratingchart">
+
+    </canvas>
+    }
+
+
+</div>

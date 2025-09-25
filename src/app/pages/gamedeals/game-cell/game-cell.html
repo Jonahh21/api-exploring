@@ -7,9 +7,9 @@
                 game().cheapest | currency:'EUR' }}</span></h2>
         <div class="card-actions justify-end">
             @if (game().steamAppID != null) {
-            <a [href]="steamLink()" target="_blank" class="btn btn-secondary"><fa-icon [icon]="steamIcon" ></fa-icon></a>
+            <a [href]="steamLink()" target="_blank" class="btn btn-secondary"><fa-icon [icon]="steamIcon" /></a>
             }
-            <button class="btn btn-primary">pepito</button>
+            <a class="btn btn-primary" [routerLink]="redirectionLink()">Ver más <fa-icon [icon]="moreIcon" /></a>
         </div>
     </div>
 </div>

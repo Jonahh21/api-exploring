@@ -1,4 +1,4 @@
-import { Component, model } from '@angular/core';
+import { Component, input, model } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import {faRotateRight} from '@fortawesome/free-solid-svg-icons'
 
@@ -9,6 +9,8 @@ import {faRotateRight} from '@fortawesome/free-solid-svg-icons'
 })
 export class SearchBar {
   searchText = model.required<string>()
+
+  placeholder = input("Busca algo...")
 
   faRR = faRotateRight
 }

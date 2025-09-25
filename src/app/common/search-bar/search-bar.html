@@ -1,4 +1,6 @@
-<div class="join">
-    <input class="input input-primary join-item" [value]="searchText()" (keyup)="searchText.set(searchInput.value)" #searchInput>
-    <button class="btn btn-primary join-item" (click)="searchText.set('')"><fa-icon [icon]="faRR" /></button>
+<div>
+    <div class="join">
+        <input class="input input-primary join-item" [value]="searchText()" (keyup)="searchText.set(searchInput.value)" [placeholder]="placeholder()" #searchInput>
+        <button class="btn btn-primary join-item" (click)="searchText.set('')"><fa-icon [icon]="faRR" /></button>
+    </div>
 </div>
