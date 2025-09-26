@@ -1,17 +1,17 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DealLookup } from '../../interfaces/deal-lookup.interface';
-import { delay, forkJoin, map, mergeAll, switchMap, timeout } from 'rxjs';
-import { GameDealsService } from '../../services/gamedeals';
+import { delay, forkJoin, interval, map, mergeAll, shareReplay, switchMap, timeout } from 'rxjs';
+import { GameDealsService } from '../../services/gamedeals.service';
 import { CommonModule, CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { faCalendar, faMoneyBill, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSteam } from '@fortawesome/free-brands-svg-icons';
-import { CategoryScale, Chart, ChartConfiguration, ChartItem, ChartOptions, ChartType, Legend, LinearScale, LineController, LineElement, PointElement, Title, Tooltip } from "chart.js";
+import { ColumnChart } from '../../common/column-chart/column-chart';
 
 @Component({
   selector: 'app-game-deal',
-  imports: [DatePipe, CurrencyPipe, FontAwesomeModule, PercentPipe, DecimalPipe, CommonModule],
+  imports: [DatePipe, CurrencyPipe, FontAwesomeModule, PercentPipe, DecimalPipe, CommonModule, ColumnChart],
   templateUrl: './game-deal.html',
 })
 export class GameDeal {
@@ -27,10 +27,8 @@ export class GameDeal {
 
   deal = signal<DealLookup[]>([])
 
-  chart: Chart | null = null
-
   gameInfo = computed(() => {
-    if (this.deal().length == 0) return null
+    if (this.deal().length == 0 || !this.deal()[0]) return null
     const game = this.deal()[0]
     return {
       steamAppID: game.steamAppID,
@@ -46,59 +44,80 @@ export class GameDeal {
     }
   })
 
-  dealInfoChanged = effect(() => {
-    let deals = this.deal().sort((a, b) => {
+  toggleTracked() {
+    if (this.gdServ.isTracked(this.gameInfo()?.steamAppID ?? "")) {
+      this.gdServ.removeFromTracked(this.gameInfo()!.steamAppID)
+    } else {
+      if (this.gameInfo()) this.gdServ.addToTracked(this.gameInfo()!.steamAppID)
+    }
+  }
+
+  priceHistory = computed(() => {
+    if(this.gameInfo() == null) return []
+    return this.gdServ.getPriceHistory(this.gameInfo()?.steamAppID!)
+  })
+
+  priceTableData = computed(() => {
+    const history = this.priceHistory();
+    const title = `Price history of ${this.gameInfo()?.title}`;
+    const xaxislabels = history.map(h => new Date(h.datechecked).toLocaleDateString());
+    const data = [{
+      name: "Price",
+      data: history.map(h => h.lowestPrice),
+      color: "#FF0000"
+    }] as ApexAxisChartSeries;
+
+    return {
+      title,
+      xaxislabels,
+      data
+    };
+  })
+
+  isTracked = computed<boolean>(() => this.gdServ.isTracked(this.gameInfo()?.steamAppID ?? ""))
+
+
+  debuggi = effect(() => {
+    console.log({tracked: this.isTracked(), salehistory: this.priceHistory()})
+  })
+
+
+  dealInfoChanged = effect((onCleanup) => {
+    
+
+    let stores = forkJoin(this.deal()
+    .sort((a, b) => {
       return parseFloat(a.salePrice) - parseFloat(b.salePrice)
     })
-
-    let stores = forkJoin(this.deal().map((d) => {
+    .map((d) => {
       return this.gdServ.getStoreById(d.storeID)
-    }))
-
-    stores
-    .pipe(
-      delay(1000)
-    )
-    .subscribe((sts) => {
-
-      if(this.chart != null) {
-        this.chart.data = {
-          labels: sts.map((store) => store?.storeName || ""),
-          datasets: [{
-            data: deals.map((deal) => parseFloat(deal.salePrice)),
-            label: "Sale price",
-            borderWidth: 5,
-            backgroundColor: "#FF000088"
-          },{
-            data: deals.map((deal) => parseFloat(deal.savings)),
-            label: "Savings",
-            borderColor: "#FF000088"
-          }]
-        }
-        this.chart?.update()
+    })).pipe(
+      shareReplay(1)
+    ).subscribe((stores) => {
+      if (stores != null){
+        this.storeNames.set(stores.map(s => s!.storeName))
       }
-      console.log("Chort", this.chart)
+    })
+
+    //Update chart data
+    onCleanup(() => {
+      stores.unsubscribe()
     })
   })
 
-  makeChart() {
-    const ctx = document.getElementById('ratingchart');
-    if (this.chart) {
-      this.chart.destroy();
-    }
-    Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend);
-    this.chart = new Chart(ctx as any, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: []
-      }
-    });
-  }
+  dealPrices = computed<ApexAxisChartSeries>(() => {
+    let saleprices = this.deal().sort((a, b) => {
+      return parseFloat(a.salePrice) - parseFloat(b.salePrice)
+    }).map(deal => parseFloat(deal.salePrice))
 
-  ngAfterViewInit() {
-    this.makeChart()
-  }
+    return [{
+      name: "SalePrice",
+      data: saleprices,
+      color: "#FF0000"
+    }] as ApexAxisChartSeries
+  })
+
+  storeNames = signal<string[]>([])
 
   constructor() {
     this.route.params.pipe(
@@ -109,7 +128,7 @@ export class GameDeal {
         return this.gdServ.searchDeal(id)
       })
     ).subscribe((gdeal) => {
-      setTimeout(this.makeChart, 10)
+      console.log("El deal: ", gdeal)
       this.deal.set(gdeal)
     })
   }

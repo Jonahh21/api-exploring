@@ -22,7 +22,8 @@
                         </div>
                         <div class="stat-title text-neutral-content">Steam ratings percent</div>
                         <div class="stat-value text-secondary">{{ gameInfo()?.steamRatingPercent | percent}}</div>
-                        <div class="stat-desc text-neutral-content">{{ gameInfo()?.steamRatingCount | number }} people voted</div>
+                        <div class="stat-desc text-neutral-content">{{ gameInfo()?.steamRatingCount | number }} people
+                            voted</div>
                     </div>
 
                     <div class="stat">
@@ -31,7 +32,8 @@
                         </div>
                         <div class="stat-title text-neutral-content">Normal Price</div>
                         <div class="stat-value text-accent">{{ gameInfo()?.normalPrice | currency }}</div>
-                        <div class="stat-desc text-neutral-content">Cheapest Price: <span class="text-secondary">{{gameInfo()?.cheapest | currency}}</span></div>
+                        <div class="stat-desc text-neutral-content">Cheapest Price: <span
+                                class="text-secondary">{{gameInfo()?.cheapest | currency}}</span></div>
                     </div>
 
                     <div class="stat">
@@ -43,13 +45,23 @@
                         <div class="stat-desc text-neutral-content">Checked</div>
                     </div>
                 </div>
+                <div class="p-5">
+                    <button class="btn" [class.btn-secondary]="isTracked()" [class.btn-primary]="!isTracked()"
+                        (click)="toggleTracked()">{{ isTracked() ? "Dejar de seguir" : "Seguir" }}</button>
+                </div>
             </div>
         </div>
     </div>
-    <canvas id="ratingchart">
-
-    </canvas>
+    @if(gameInfo() != null) {
+    <app-column-chart [dataseries]="dealPrices()" title="{{ gameInfo()?.title }} price list"
+        [xaxislabels]="storeNames()"></app-column-chart>
     }
-
+    @if (priceHistory().length != 0) {
+    <app-column-chart
+        [dataseries]="priceTableData().data"
+        [title]="priceTableData().title"
+        [xaxislabels]="priceTableData().xaxislabels"></app-column-chart>
+    }
+    }
 
 </div>

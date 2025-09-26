@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { SearchBar } from "../../common/search-bar/search-bar";
 import { rxResource, toObservable } from '@angular/core/rxjs-interop'
 import { debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
-import { GameDealsService } from '../../services/gamedeals';
+import { GameDealsService } from '../../services/gamedeals.service';
 import { Game } from '../../interfaces/game.interface';
 import { CurrencyPipe } from '@angular/common';
 import { searchWithDebounce } from '../../common/utilities/searchwithdebounce';
@@ -24,6 +24,7 @@ export class GameDeals {
   sortedGames = computed(() => {
     return this.games()?.sort((a, b) => {
       return parseFloat(a.cheapest) - parseFloat(b.cheapest)
-    }) ?? []
+    })
+    .filter(g => g.steamAppID != null) ?? []
   })
 }
