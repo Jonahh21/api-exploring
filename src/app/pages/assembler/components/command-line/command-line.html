@@ -1,0 +1,9 @@
+<li class="list-row" [class.bg-base-300]="command() == 'MARK'">
+        <div class="text-4xl opacity-30 tabular-nums" [class.font-black]="command() == 'MARK'"
+                [class.text-accent]="command() == 'MARK'">{{ index() }}</div>
+        <div class="text-4xl tabular-nums font-mono font-thin flex justify-baseline space-x-4">
+                <span [class.text-primary]="isValid()" [class.text-error]="!isValid()">{{ command() }}</span>
+                <span class="text-secondary">{{ args().arg0 }}</span>
+                <span class="text-accent">{{ args().arg1 }}</span>
+        </div>
+</li>

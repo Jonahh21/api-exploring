@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
@@ -11,5 +11,16 @@ export class Navigation {
 
   name1 = environment.appName1
   name2 = environment.appName2
+
+  links = signal<{
+    url: string
+    title: string
+  }[]>([{
+    url: '/gamedeals',
+    title: 'Game Deals'
+  },{
+    url: '/assembler',
+    title: 'Assembly Interpreter'
+  }])
 
 }

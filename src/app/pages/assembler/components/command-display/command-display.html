@@ -1,0 +1,8 @@
+<ul class="list bg-base-200 rounded-box">
+
+    @for (line of lines(); track $index) {
+        <app-command-line (animate.enter)="enteringFn($event)" (animate.exit)="leavingFn($event)"
+        [line]="line"
+        [index]="$index" ></app-command-line>
+    }
+</ul>
